@@ -119,18 +119,22 @@ docker run -v $PWD/$DIR/export:/export \
 	  $IMAGE_NAME \
 	  /mybin/strip-docker-image-export -d /export $VERBOSE $PACKAGES $FILES
 
-cat > $DIR/Dockerfile <<!
+echo "generating Dockerfile..."
+cat > $DIR/Dockerfile <<-EOF
 FROM scratch
 ADD export /
-!
+EOF
 
 for PORT in $EXPOSE_PORTS ; do
 	echo EXPOSE $PORT >> $DIR/Dockerfile
 done
+echo "generate Dockerfile done."
 
-(
-	cd $DIR
-	docker build --no-cache -t $TARGET_IMAGE_NAME .
-)
-
-rm -rf $DIR
+# don't auto build as we always want to customize Dockerfile, such as ENTRYPOINT
+cd $DIR
+#(
+#	cd $DIR
+#	docker build --no-cache -t $TARGET_IMAGE_NAME .
+#)
+# 
+#rm -rf $DIR
